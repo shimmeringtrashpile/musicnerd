@@ -1,1 +1,12 @@
-<svg height='100px' width='100px'  fill="#ffffff" xmlns="http://www.w3.org/2000/svg" data-name="Layer 1" viewBox="0 0 95 95" x="0px" y="0px"><title>button</title><path d="M47.5,5.5a42,42,0,1,0,42,42A42,42,0,0,0,47.5,5.5Zm4.3,53.43L32,70.36V24.64L51.8,36.07,71.6,47.5Z"></path></svg>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" viewBox="0 0 100 100" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xml:space="preserve" xmlns:serif="http://www.serif.com/" style="fill-rule:evenodd;clip-rule:evenodd;stroke-linejoin:round;stroke-miterlimit:2;">
+    <g>
+        <g transform="matrix(0.96222,0,0,0.96222,1.88902,1.88902)">
+            <circle cx="50" cy="50" r="50" style="fill:rgb(30,30,30);"/>
+        </g>
+        <g transform="matrix(-0.00847961,0.912832,-0.900801,-0.00836785,99.4348,-2.13264)">
+            <path d="M55.831,32.326C56.217,31.621 56.951,31.183 57.746,31.183C58.542,31.183 59.275,31.621 59.662,32.326C64.096,40.418 75.02,60.352 79.347,68.249C79.724,68.936 79.714,69.775 79.32,70.453C78.927,71.13 78.208,71.547 77.432,71.547C68.67,71.547 46.823,71.547 38.061,71.547C37.284,71.547 36.566,71.13 36.173,70.453C35.779,69.775 35.768,68.936 36.145,68.249C40.472,60.352 51.396,40.418 55.831,32.326Z" style="fill:rgb(235,235,235);"/>
+        </g>
+    </g>
+</svg>
