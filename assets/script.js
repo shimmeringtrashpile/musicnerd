@@ -1,8 +1,8 @@
-
 const mainTrack = document.getElementById('main-track');
 const timeStamps = document.getElementById('time-stamps');
 const play = document.querySelector('.play');
 const pause = document.querySelector('.pause');
+const trackDuration = document.querySelector('.duration');
 
 const annotations = [{
     time: '09:13',
@@ -43,7 +43,6 @@ annotations.forEach(({ time, note }) => {
 });
 
 const click = 'click'
-
 play.addEventListener(click, (event) => {
     // press play and hide play and show pause
     mainTrack.play();
@@ -65,4 +64,31 @@ timeStamps.addEventListener(click, (event) => {
     const dataTime = event.target.getAttribute('data-time');
     mainTrack.currentTime = dataTime;
     mainTrack.play();
+    play.style.display = 'none';
+    pause.style.display = 'block';
 })
+
+function showHoursMinutesSeconds(time) {
+    const hours = Math.floor(time / 60 / 60);
+    const minutes = Math.floor(time / 60) - (hours * 60);
+    const seconds = (time % 60).toFixed();
+    let formattedTime
+    if (hours === 0) { 
+        formattedTime = minutes + ':' + seconds;
+    } else { 
+        formattedTime = hours + ':' + minutes + ':' + seconds;
+    }
+    trackDuration.innerHTML = `${formattedTime}`;
+}
+
+function getDuration() {
+    // Wait until file metadata is loaded
+    mainTrack.onloadedmetadata = (event) => {
+        const duration = mainTrack.duration;
+        console.log(duration);
+        showHoursMinutesSeconds(duration);
+    };
+}
+
+getDuration();
+
