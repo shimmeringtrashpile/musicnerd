@@ -35,7 +35,7 @@ body {
     display: none;
 }
 
-.duration {
+.duration, .time-update {
     display: block;
     margin: auto;
     width: 100%;
@@ -75,5 +75,5 @@ body {
  #time-stamps li:hover::before, 
  #time-stamps li.active::before {
  transform: scale(1.1);
-    background: red;
+    background: rgb(234, 0, 255);
 }

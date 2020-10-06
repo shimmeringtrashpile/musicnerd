@@ -5,26 +5,32 @@ const Program = {
         this.play = document.querySelector('.play');
         this.pause = document.querySelector('.pause');
         this.trackDuration = document.querySelector('.duration');
-        
+        this.timeUpdate = document.querySelector('.time-update');
+
         this.annotations = [{
                 time: '00:05',
                 note: 'transition.',
                 link: 'http://www.google.com'
+            }, 
+            {
+                time: '00:08',
+                note: 'another transition.',
+                link: 'http://www.google.com'
             },    
-        {
+            {
             time: '09:13',
             note: 'It speeds up here unexpectedly.',
             link: 'http://www.google.com'
-        },
-        {
+            },
+            {
             time: '09:15',
             note: 'It speeds up here too.',
             link: 'http://www.google.com'
-        },
-        {
+            },
+            {
             time: '14:23',
             note: 'Listen for the change here. The strings fade out.',
-        }];
+            }];
         this.events();
         this.renderAnnotations();
         this.setCurrentAnnotationInterval();
@@ -41,7 +47,7 @@ const Program = {
             // press play and hide play and show pause
             this.pauseTrack();
         })
-        
+
         this.timeStamps.addEventListener(click, (event) => {
             console.log(event, event.target);
             //event.target.dataset.time;
@@ -50,12 +56,18 @@ const Program = {
             this.setCurrentAnnotation();
             this.playTrack();
         })
+
+        this.mainTrack.addEventListener('timeupdate', (event) => {
+            const currentTime = this.mainTrack.currentTime;
+            this.showTimeUpdate(this.getParsedDuration(currentTime));
+        });
+
         const onLoadedMetaData = (event) => {
             const duration = this.mainTrack.duration;
             console.log(duration);
-            this.showHoursMinutesSeconds(this.getParsedDuration(duration));
-        };
-        
+            this.showDuration(this.getParsedDuration(duration));
+        }
+
         if (this.mainTrack.duration) {
             console.log('Track already loaded!');
             onLoadedMetaData();
@@ -66,6 +78,8 @@ const Program = {
     
     playTrack(){
         this.mainTrack.play();
+        const currentTime = this.mainTrack.currentTime;
+        console.log(currentTime);
         this.play.style.display = 'none';
         this.pause.style.display = 'block';
     },
@@ -101,8 +115,12 @@ const Program = {
         return Number(minutes) * 60 + Number(seconds);
     },
 
-    showHoursMinutesSeconds(time) {
+    showDuration(time) {
         this.trackDuration.innerHTML = `${time}`;
+    },
+
+    showTimeUpdate(time) {
+        this.timeUpdate.innerHTML = `${time}`;
     },
 
     renderAnnotations(){ 
