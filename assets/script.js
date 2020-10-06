@@ -8,29 +8,29 @@ const Program = {
         this.timeUpdate = document.querySelector('.time-update');
 
         this.annotations = [{
-                time: '00:05',
-                note: 'transition.',
-                link: 'http://www.google.com'
-            }, 
-            {
-                time: '00:08',
-                note: 'another transition.',
-                link: 'http://www.google.com'
-            },    
-            {
-            time: '09:13',
-            note: 'It speeds up here unexpectedly.',
+            time: '00:05',
+            note: 'transition.',
             link: 'http://www.google.com'
-            },
-            {
-            time: '09:15',
-            note: 'It speeds up here too.',
+        }, 
+        {
+            time: '00:08',
+            note: 'another transition.',
             link: 'http://www.google.com'
-            },
-            {
-            time: '14:23',
-            note: 'Listen for the change here. The strings fade out.',
-            }];
+        },    
+        {
+        time: '09:13',
+        note: 'It speeds up here unexpectedly.',
+        link: 'http://www.google.com'
+        },
+        {
+        time: '09:15',
+        note: 'It speeds up here too.',
+        link: 'http://www.google.com'
+        },
+        {
+        time: '14:23',
+        note: 'Listen for the change here. The strings fade out.',
+        }];
         this.events();
         this.renderAnnotations();
         this.setCurrentAnnotationInterval();
@@ -129,7 +129,7 @@ const Program = {
             const li = `
                 <li data-time="${secondsTime}">
                     ${time} <br> ${note}
-                    ${link && `<a href="${link}">link</a>`}
+                    ${link && `<a href="${link}" target="_blank">link</a>`}
                 </li>`;
             // let li = document.createElement('li')
             this.timeStamps.innerHTML += li;
