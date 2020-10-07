@@ -137,14 +137,12 @@ const Program = {
     },
 
     setCurrentAnnotation(){
-        const annotations = [...this.annotations].reverse()
-        //console.log(annotations);
         // loop over annotations and find the first where time < current time.
+        const annotations = [...this.annotations].reverse()
         const currentTime = this.mainTrack.currentTime;
         
         // Remove active class
         const active = document.querySelector('#time-stamps li.active')
-        console.log(active);
         if (active) {
             active.classList.remove('active')
         } 
@@ -163,21 +161,6 @@ const Program = {
         setInterval(() => this.setCurrentAnnotation(), 500);
     }
 }
-
-/*const tracks = [{
-    name: '',
-    path: '',
-    annotations: [],
-    genre: 'classical'
-}, ...];*/
-
-/*annotations.forEach((annotation) => {
-    const time = annotation.time; // ES5
-    const note = annotation.note; // ES5
-})
-annotations.forEach((annotation) => {
-    const { time, note } = annotation; // ES6
-})*/
 
 Program.init();
 
