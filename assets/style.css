@@ -45,19 +45,9 @@ body {
 
 .volume{
     display: inline-block;
-    width: 65px;
-    height: 20px;
-    padding: 0;
-    margin: auto;
     width: 100%;
     text-align: center;
-    margin-bottom: 8px;
-}
-
-.volume input {
-    width: 65px;
-    height: 20px;
-    margin: 0;
+    margin-bottom: 12px; */
 }
 
 #time-stamps {
