@@ -7,6 +7,7 @@ const Program = {
         this.trackDuration = document.querySelector('.duration');
         this.timeUpdate = document.querySelector('.time-update');
         this.volumeSlider = document.getElementById('volume-slider');
+        this.progressBar = document.querySelector('.progress-bar');
 
         this.annotations = [{
             time: '00:05',
@@ -81,6 +82,16 @@ const Program = {
             this.mainTrack.onloadedmetadata = onLoadedMetaData
         }
     },
+
+    getDuration(){
+        const duration = this.mainTrack.duration;
+        return duration;
+    },
+
+    getCurrentTime(){
+        const currentTime = this.mainTrack.currentTime;
+        return currentTime;
+    },
     
     playTrack(){
         this.mainTrack.play();
@@ -98,7 +109,6 @@ const Program = {
 
     changeVolume(){
         const volume = this.volumeSlider.value * .10
-        console.log('volume: ' + volume);
         this.mainTrack.volume = volume;
     },
 
@@ -133,6 +143,18 @@ const Program = {
 
     showTimeUpdate(time) {
         this.timeUpdate.innerHTML = `${time}`;
+        // 1 at the beginning, 0.5 middle, 0 at the end.
+        // 56.31/56.31 = 1
+        // (total time - current time) / total time
+        // 56.31 - 0 =  56.31 / 56.31 = 1
+        // 56.31 - 56.31 = 0 / 56.31 = 0
+        // 56.31 - 28.16 = 28.15 / 56.31 = 0.5
+        // we want to change progress-bar element. stroke-dashoffset
+        const percentage = (this.getDuration() - this.getCurrentTime()) / this.getDuration();
+        const strokeDashOffset = 298.1 * percentage;
+        console.log(strokeDashOffset);
+        this.progressBar.style.strokeDashoffset = strokeDashOffset;
+
     },
 
     renderAnnotations(){ 
