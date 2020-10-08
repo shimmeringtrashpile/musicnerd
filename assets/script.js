@@ -6,6 +6,7 @@ const Program = {
         this.pause = document.querySelector('.pause');
         this.trackDuration = document.querySelector('.duration');
         this.timeUpdate = document.querySelector('.time-update');
+        this.volumeSlider = document.getElementById('volume-slider');
 
         this.annotations = [{
             time: '00:05',
@@ -48,6 +49,11 @@ const Program = {
             this.pauseTrack();
         })
 
+        this.volumeSlider.addEventListener(click, (event) => {
+            // adjust slider range to change volume
+            this.changeVolume();
+        })
+
         this.timeStamps.addEventListener(click, (event) => {
             console.log(event, event.target);
             //event.target.dataset.time;
@@ -88,6 +94,12 @@ const Program = {
         this.mainTrack.pause();
         this.play.style.display = 'block';
         this.pause.style.display = 'none';
+    },
+
+    changeVolume(){
+        const volume = this.volumeSlider.value * .10
+        console.log('volume: ' + volume);
+        this.mainTrack.volume = volume;
     },
 
     getParsedDuration(time){
