@@ -8,6 +8,7 @@ const Program = {
         this.timeUpdate = document.querySelector('.time-update');
         this.volumeSlider = document.getElementById('volume-slider');
         this.progressBar = document.querySelector('.progress-bar');
+        this.path = document.querySelector('.progress-bar');
 
         this.annotations = [{
             time: '00:05',
@@ -144,15 +145,12 @@ const Program = {
     showTimeUpdate(time) {
         this.timeUpdate.innerHTML = `${time}`;
         // 1 at the beginning, 0.5 middle, 0 at the end.
-        // 56.31/56.31 = 1
-        // (total time - current time) / total time
-        // 56.31 - 0 =  56.31 / 56.31 = 1
-        // 56.31 - 56.31 = 0 / 56.31 = 0
-        // 56.31 - 28.16 = 28.15 / 56.31 = 0.5
-        // we want to change progress-bar element. stroke-dashoffset
-        const percentage = (this.getDuration() - this.getCurrentTime()) / this.getDuration();
-        const strokeDashOffset = 298.1 * percentage;
-        console.log(strokeDashOffset);
+        const remainingTimeUnitInterval = (this.getDuration() - this.getCurrentTime()) / this.getDuration();
+        
+        // Use SVGPathElement's getTotalLength() method to get circle length.
+        this.length = this.path.getTotalLength();
+        const strokeDashOffset = this.length * remainingTimeUnitInterval;
+        console.log('strokeDashoffset: ' + strokeDashOffset);
         this.progressBar.style.strokeDashoffset = strokeDashOffset;
 
     },
