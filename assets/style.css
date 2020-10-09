@@ -100,6 +100,8 @@ body {
     stroke-linecap: round; 
     fill: none;
     stroke-width: 1; 
+    transform-origin: center;
+    transform: rotate(90deg);
 }
 
 .timeline {
