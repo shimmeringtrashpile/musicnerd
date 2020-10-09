@@ -90,7 +90,7 @@ body {
 
 .progress-bar {
     transition: stroke-dashoffset 500ms;
-    /* stroke-dasharray and stroke-dashoffset should match */
+    /* stroke-dasharray and stroke-dashoffset numbers should match */
     /* Use SVGPathElement's getTotalLength() method to get length. */
     /* Reference: https://css-tricks.com/svg-line-animation-works/ */
     stroke-dasharray: 310.51519775390625;

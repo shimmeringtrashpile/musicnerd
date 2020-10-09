@@ -11,29 +11,45 @@ const Program = {
         this.path = document.querySelector('.progress-bar');
 
         this.annotations = [{
-            time: '00:05',
+            time: '00:03',
             note: 'transition.',
             link: 'http://www.google.com'
         }, 
         {
-            time: '00:08',
+            time: '00:05',
             note: 'another transition.',
             link: 'http://www.google.com'
         },    
         {
-        time: '09:13',
-        note: 'It speeds up here unexpectedly.',
-        link: 'http://www.google.com'
+            time: '00:07',
+            note: 'It speeds up here <a href="http://google.com">unexpectedly</a>.',
+            link: 'http://www.google.com'
         },
         {
-        time: '09:15',
-        note: 'It speeds up here too.',
-        link: 'http://www.google.com'
+            time: '00:08',
+            note: 'It speeds up here too.',
+            link: 'http://www.google.com'
         },
         {
-        time: '14:23',
-        note: 'Listen for the change here. The strings fade out.',
-        }];
+            time: '00:09',
+            note: 'Listen for the change here. The strings fade out.',
+        },
+        {
+            time: '00:11',
+            note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
+        },
+        {
+            time: '00:14',
+            note: 'Lorem ipsum  ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
+        },
+        {
+            time: '00:16',
+            note: 'Lorem ipsum Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+        },
+        {
+            time: '00:19',
+            note: 'Lorem ipsum sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
+        },];
         this.events();
         this.renderAnnotations();
         this.setCurrentAnnotationInterval();
@@ -144,6 +160,7 @@ const Program = {
 
     showTimeUpdate(time) {
         this.timeUpdate.innerHTML = `${time}`;
+        // Get length of circle and use to calculate the 'unit interval' of remaining time.
         // 1 at the beginning, 0.5 middle, 0 at the end.
         const remainingTimeUnitInterval = (this.getDuration() - this.getCurrentTime()) / this.getDuration();
         
