@@ -7,8 +7,11 @@ const Program = {
         this.trackDuration = document.querySelector('.duration');
         this.timeUpdate = document.querySelector('.time-update');
         this.volumeSlider = document.getElementById('volume-slider');
+        // TODO: remove this duplicate
         this.progressBar = document.querySelector('.progress-bar');
         this.path = document.querySelector('.progress-bar');
+        this.timeLine = document.querySelector('.timeline');
+        this.player = document.getElementById('player');
 
         this.annotations = [{
             time: '00:03',
@@ -50,9 +53,9 @@ const Program = {
             time: '00:19',
             note: 'Lorem ipsum sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         },];
-        this.events();
         this.renderAnnotations();
         this.setCurrentAnnotationInterval();
+        this.events();
     },
     
     events(){
@@ -73,13 +76,15 @@ const Program = {
         })
 
         this.timeStamps.addEventListener(click, (event) => {
-            console.log(event, event.target);
-            //event.target.dataset.time;
-            const dataTime = event.target.getAttribute('data-time');
-            this.mainTrack.currentTime = dataTime;
-            this.setCurrentAnnotation();
-            this.playTrack();
+            this.annotationClick(event);
         })
+
+        document.querySelectorAll('.dot').forEach((dot) => {
+            dot.addEventListener('click', (event) => {
+                console.log(click)
+                this.annotationClick(event);
+            })
+        });
 
         this.mainTrack.addEventListener('timeupdate', (event) => {
             const currentTime = this.mainTrack.currentTime;
@@ -98,6 +103,15 @@ const Program = {
         } else { 
             this.mainTrack.onloadedmetadata = onLoadedMetaData
         }
+    },
+
+    annotationClick (event) {
+        console.log(event, event.target);
+        //event.target.dataset.time;
+        const dataTime = event.target.getAttribute('data-time');
+        this.mainTrack.currentTime = dataTime;
+        this.setCurrentAnnotation();
+        this.playTrack();
     },
 
     getDuration(){
@@ -173,6 +187,7 @@ const Program = {
     },
 
     renderAnnotations(){ 
+        const totalTime = this.getDuration();
         this.annotations.forEach(({ time, note, link = '' }) => {
             const secondsTime = this.getSeconds(time);
             const li = `
@@ -182,7 +197,30 @@ const Program = {
                 </li>`;
             // let li = document.createElement('li')
             this.timeStamps.innerHTML += li;
+            this.showAnnotationDot(secondsTime, totalTime);
         });
+    },
+
+    showAnnotationDot(seconds, total){
+        const degrees = (seconds / total) * 360
+        // Use sine (vertical) and cosine (horizontal) to get dot angle.
+        // range is -1 and 1.
+        // Our circles width and height need to be multiplied by these values.
+        // Ex: If circle is 300, radius is 150
+        const radius = Math.floor(this.timeLine.getBoundingClientRect().width / 2) - 7
+        // 360 = 2, 180 = 1
+        const angle = degrees / -180 * Math.PI
+        const x = Math.floor(radius * (Math.cos(angle) + 0.0)) // Math.PI * 1 if 180, Math.PI * 2 if 360
+        const y = Math.floor(radius * (Math.sin(angle) + 0.0))
+        console.log(seconds, total);
+        console.log(radius, angle, x, y);
+        const dot = document.createElement('div');
+        dot.classList.add('dot');
+        this.player.appendChild(dot);
+        dot.style.margin = `${x}px ${y}px`
+        dot.innerText = seconds
+        dot.setAttribute('data-time', seconds);
+
     },
 
     setCurrentAnnotation(){
