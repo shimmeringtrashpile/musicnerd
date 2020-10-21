@@ -53,12 +53,14 @@ const Program = {
             time: '00:19',
             note: 'Lorem ipsum sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
         },];
-        this.renderAnnotations();
         this.setCurrentAnnotationInterval();
         this.events();
     },
     
     events(){
+
+        window.addEventListener("resize", debounce(this.renderAnnotations, 50).bind(this));
+
         const click = 'click'
         this.play.addEventListener(click, (event) => {
             // press play and hide play and show pause
@@ -79,12 +81,21 @@ const Program = {
             this.annotationClick(event);
         })
 
-        document.querySelectorAll('.dot').forEach((dot) => {
-            dot.addEventListener('click', (event) => {
-                console.log(click)
-                this.annotationClick(event);
-            })
-        });
+        this.player.addEventListener(click, (event) => {
+            // Check if the element is a dot
+            if (event.target.classList.contains("dot")){
+            this.annotationClick(event);
+            }
+        })
+
+        // console.log(document.querySelectorAll('.dot'))
+
+        // document.querySelectorAll('.dot').forEach((dot) => {
+        //     dot.addEventListener('click', (event) => {
+        //         console.log(click)
+        //         this.annotationClick(event);
+        //     })
+        // });
 
         this.mainTrack.addEventListener('timeupdate', (event) => {
             const currentTime = this.mainTrack.currentTime;
@@ -95,6 +106,7 @@ const Program = {
             const duration = this.mainTrack.duration;
             console.log(duration);
             this.showDuration(this.getParsedDuration(duration));
+            this.renderAnnotations();
         }
 
         if (this.mainTrack.duration) {
@@ -112,6 +124,12 @@ const Program = {
         this.mainTrack.currentTime = dataTime;
         this.setCurrentAnnotation();
         this.playTrack();
+        const timeStamps = document.querySelector('#time-stamps');
+        const scroll = timeStamps.offsetTop
+        const dataTimeOffset = document.querySelector(`li[data-time="${dataTime}"]`).offsetTop 
+        const scrollPosition = dataTimeOffset - timeStamps.offsetTop - 10
+        console.log(scrollPosition);
+        timeStamps.scrollTo(0, scrollPosition);
     },
 
     getDuration(){
@@ -186,8 +204,17 @@ const Program = {
 
     },
 
-    renderAnnotations(){ 
+    clearAnnotations(){
+        this.timeStamps.innerHTML = '';
+        document.querySelectorAll('.dot').forEach(dot => {
+            this.player.removeChild(dot)
+        }) ;
+    },
+
+    renderAnnotations(){
+        console.log(this); 
         const totalTime = this.getDuration();
+        this.clearAnnotations();
         this.annotations.forEach(({ time, note, link = '' }) => {
             const secondsTime = this.getSeconds(time);
             const li = `
