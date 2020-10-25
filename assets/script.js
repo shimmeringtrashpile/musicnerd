@@ -58,6 +58,21 @@ const Program = {
     },
     
     events(){
+        window.onload = () => {
+            const onLoadedMetaData = (event) => {
+                const duration = this.mainTrack.duration;
+                console.log(duration);
+                this.showDuration(this.getParsedDuration(duration));
+                this.renderAnnotations();
+            };
+    
+            if (this.mainTrack.duration) {
+                console.log('Track already loaded!');
+                onLoadedMetaData();
+            } else { 
+                this.mainTrack.onloadedmetadata = onLoadedMetaData
+            }
+        };
 
         window.addEventListener("resize", debounce(this.renderAnnotations, 50).bind(this));
 
@@ -101,20 +116,6 @@ const Program = {
             const currentTime = this.mainTrack.currentTime;
             this.showTimeUpdate(this.getParsedDuration(currentTime));
         });
-
-        const onLoadedMetaData = (event) => {
-            const duration = this.mainTrack.duration;
-            console.log(duration);
-            this.showDuration(this.getParsedDuration(duration));
-            this.renderAnnotations();
-        }
-
-        if (this.mainTrack.duration) {
-            console.log('Track already loaded!');
-            onLoadedMetaData();
-        } else { 
-            this.mainTrack.onloadedmetadata = onLoadedMetaData
-        }
     },
 
     annotationClick (event) {
@@ -130,6 +131,9 @@ const Program = {
         const scrollPosition = dataTimeOffset - timeStamps.offsetTop - 10
         console.log(scrollPosition);
         timeStamps.scrollTo(0, scrollPosition);
+
+        console.error({dataTime})
+        this.setActiveAnnotation(dataTime);
     },
 
     getDuration(){
@@ -233,19 +237,23 @@ const Program = {
         // Use sine (vertical) and cosine (horizontal) to get dot angle.
         // range is -1 and 1.
         // Our circles width and height need to be multiplied by these values.
-        // Ex: If circle is 300, radius is 150
-        const radius = Math.floor(this.timeLine.getBoundingClientRect().width / 2) - 7
-        // 360 = 2, 180 = 1
-        const angle = degrees / -180 * Math.PI
-        const x = Math.floor(radius * (Math.cos(angle) + 0.0)) // Math.PI * 1 if 180, Math.PI * 2 if 360
-        const y = Math.floor(radius * (Math.sin(angle) + 0.0))
-        console.log(seconds, total);
-        console.log(radius, angle, x, y);
+        // Ex: If circle is 300, radius is 150 - half the width of the .dot
         const dot = document.createElement('div');
         dot.classList.add('dot');
         this.player.appendChild(dot);
+        const halfDotWidth = dot.clientWidth / 2;
+        //const radius = (this.timeLine.getBoundingClientRect().width / 2) - halfDotWidth;
+        const radius = (this.player.clientWidth / 2);
+        console.log('timeLine: ' + this.player.clientWidth);
+        console.log('radius: ' + radius);
+        // 360 = 2, 180 = 1
+        const angle = degrees / -180 * Math.PI
+        const x = (radius * Math.cos(angle)).toFixed(2) // Math.PI * 1 if 180, Math.PI * 2 if 360
+        const y = (radius * Math.sin(angle)).toFixed(2)
+        console.log(seconds, total);
+        console.log(radius, angle, x, y);
         dot.style.margin = `${x}px ${y}px`
-        dot.innerText = seconds
+        // dot.innerText = seconds
         dot.setAttribute('data-time', seconds);
 
     },
@@ -255,20 +263,25 @@ const Program = {
         const annotations = [...this.annotations].reverse()
         const currentTime = this.mainTrack.currentTime;
         
-        // Remove active class
-        const active = document.querySelector('#time-stamps li.active')
-        if (active) {
-            active.classList.remove('active')
-        } 
-
         // Add active class
         for (let { time } of annotations) {
             const annotationTime = this.getSeconds(time)
             if (currentTime < annotationTime) continue;
-            const annotation = document.querySelector(`[data-time="${annotationTime}"]`)
-            annotation.classList.add('active')
+            this.setActiveAnnotation(annotationTime);
             break;
         }
+    },
+    
+    setActiveAnnotation(annotationTime){
+        // Remove active class
+        const active = document.querySelector('#time-stamps li.active');
+
+        if (active) {
+            active.classList.remove('active')
+        } 
+
+        const annotation = document.querySelector(`li[data-time="${annotationTime}"]`)
+        annotation.classList.add('active')
     },
 
     setCurrentAnnotationInterval(){
