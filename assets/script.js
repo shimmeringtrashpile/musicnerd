@@ -12,6 +12,7 @@ const Program = {
         this.path = document.querySelector('.progress-bar');
         this.timeLine = document.querySelector('.timeline');
         this.player = document.getElementById('player');
+        this.menu();
 
         this.annotations = [{
             time: '00:03',
@@ -56,6 +57,14 @@ const Program = {
         this.setCurrentAnnotationInterval();
         this.events();
     },
+
+    menu(){
+        document.querySelector('.menu-button').addEventListener('click', this.menuOpen);
+    },
+
+    menuOpen(){
+        document.querySelector('.menu-container').classList.add('active')
+    },
     
     events(){
         window.onload = () => {
@@ -64,6 +73,7 @@ const Program = {
                 console.log(duration);
                 this.showDuration(this.getParsedDuration(duration));
                 this.renderAnnotations();
+                this.setProgressBarLength();
             };
     
             if (this.mainTrack.duration) {
@@ -118,6 +128,13 @@ const Program = {
         });
     },
 
+    setProgressBarLength() {
+        const progressBar = document.querySelector('.progress-bar')
+        const length = progressBar.getTotalLength()
+        progressBar.style.strokeDashoffset = length
+        progressBar.style.strokeDasharray = length
+    },
+
     annotationClick (event) {
         console.log(event, event.target);
         //event.target.dataset.time;
@@ -125,15 +142,18 @@ const Program = {
         this.mainTrack.currentTime = dataTime;
         this.setCurrentAnnotation();
         this.playTrack();
-        const timeStamps = document.querySelector('#time-stamps');
-        const scroll = timeStamps.offsetTop
-        const dataTimeOffset = document.querySelector(`li[data-time="${dataTime}"]`).offsetTop 
-        const scrollPosition = dataTimeOffset - timeStamps.offsetTop - 10
-        console.log(scrollPosition);
-        timeStamps.scrollTo(0, scrollPosition);
-
+        
         console.error({dataTime})
         this.setActiveAnnotation(dataTime);
+        this.scrollToAnnotation(dataTime);
+    },
+
+    scrollToAnnotation(dataTime) {
+    const timeStamps = document.querySelector('#time-stamps');
+    const dataTimeOffset = document.querySelector(`li[data-time="${dataTime}"]`).offsetTop 
+    const scrollPosition = dataTimeOffset - timeStamps.offsetTop - 10
+    console.log(scrollPosition);
+    timeStamps.scrollTo(0, scrollPosition);
     },
 
     getDuration(){
@@ -274,14 +294,13 @@ const Program = {
     
     setActiveAnnotation(annotationTime){
         // Remove active class
-        const active = document.querySelector('#time-stamps li.active');
-
-        if (active) {
-            active.classList.remove('active')
-        } 
-
+        const activeElements = document.querySelectorAll('.active');
+        activeElements.forEach(active => active.classList.remove('active'))
         const annotation = document.querySelector(`li[data-time="${annotationTime}"]`)
+        const annotationDot = document.querySelector(`.dot[data-time="${annotationTime}"]`)
         annotation.classList.add('active')
+        annotationDot.classList.add('active')
+        this.scrollToAnnotation(annotationTime);
     },
 
     setCurrentAnnotationInterval(){

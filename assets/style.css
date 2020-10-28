@@ -1,133 +1,194 @@
 main {
-    width: 80%;
-    max-width: 480px;
-    margin: auto;
+  width: 80%;
+  max-width: 480px;
+  margin: auto;
+}
+
+.menu-button {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer;
+    transition: .2s;
+}
+
+.menu-button:hover {
+    height: 27px;
+}
+
+.menu-container {
+    margin: 0;
+    position: absolute;
+    right: -60%;
+    top: 0;
+    height: 100vh;
+    width: 60%;
+    background: white;
+    z-index: 2;
+    padding: 0;
+    transition: .5s;
+}
+
+.menu-container.active {
+    right: 0;
+}
+
+li::marker{
+    content: none;
+}
+
+.line {
+    height: 6px;
+    background: #ffffff;
+    border-radius: 5px;
+
 
 }
+
+
 #player {
-    position: relative;
-    margin-bottom: 40px;
-    margin-top: 30px;
+  position: relative;
+  margin-bottom: 40px;
+  margin-top: 30px;
 }
 
 .cover {
-    border-radius: 50%;
-    /* border: 2px solid #fff; */
-    width: 100%;
-    display: block;
+  border-radius: 50%;
+  /* border: 2px solid #fff; */
+  width: 100%;
+  display: block;
 }
 
 body {
-    background: #2C2B2B;
-    color: #fff;
-    font-family: 'Roboto', sans-serif;
+  background: #2c2b2b;
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  overflow-x: hidden;
 }
 
-.play, .pause {
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    margin-left: -35px;
-    background: white;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: .3s;
-    width: 70px;
-    z-index: 1;
-    
+.play,
+.pause {
+  position: absolute;
+  bottom: -30px;
+  left: 50%;
+  margin-left: -35px;
+  background: white;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.3s;
+  width: 70px;
+  z-index: 1;
 }
 
 .pause {
-    display: none;
+  display: none;
 }
 
-.duration, .time-update {
-    display: block;
-    margin: auto;
-    width: 100%;
-    text-align: center;
-    margin-bottom: 8px;
+.duration,
+.time-update {
+  display: block;
+  margin: auto;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 8px;
 }
 
-.volume{
-    display: inline-block;
-    width: 100%;
-    text-align: center;
-    margin-bottom: 12px;
+.volume {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 12px;
 }
 
 #time-stamps {
-    margin-top: 30px;
-    max-height: 150px;
-    overflow: auto;
-    scroll-behavior: smooth;
+  margin-top: 30px;
+  max-height: 150px;
+  overflow: auto;
+  scroll-behavior: smooth;
 }
 
 #time-stamps li::before {
-    content: '';
-    display: block;
-    width: 15px;
-    height: 15px;
-    background: #9D9D9D;
-    border-radius: 50%;
-    position: absolute;
-    left: -25px;
-    top: 5px;
-    transition: .3s;
+  content: "";
+  display: block;
+  width: 15px;
+  height: 15px;
+  background: #9d9d9d;
+  border-radius: 50%;
+  position: absolute;
+  left: -25px;
+  top: 5px;
+  transition: 0.3s;
 }
 
 #time-stamps li {
-    cursor: pointer;
-    transition: .3s;
-    color: #9D9D9D;
-    line-height: 26px;
-    margin-top: 10px;
-    list-style: none;
-    position: relative;
+  cursor: pointer;
+  transition: 0.3s;
+  color: #9d9d9d;
+  line-height: 26px;
+  margin-top: 10px;
+  list-style: none;
+  position: relative;
 }
- #time-stamps li a {
-    color: #858585;
- }
+#time-stamps li a {
+  color: #858585;
+}
 
- #time-stamps li:hover::before, 
- #time-stamps li.active::before {
- transform: scale(1.1);
-    background: rgb(234, 0, 255);
+#time-stamps li:hover::before,
+#time-stamps li.active::before {
+  transform: scale(1.1);
+  background: rgb(234, 0, 255);
+}
+
+.dot.active {
+  background: rgb(234, 0, 255);
 }
 
 .progress-bar {
-    transition: stroke-dashoffset 500ms;
-    /* stroke-dasharray and stroke-dashoffset numbers should match */
-    /* Use SVGPathElement's getTotalLength() method to get length. */
-    /* Reference: https://css-tricks.com/svg-line-animation-works/ */
-    stroke-dasharray: 310.51519775390625;
-    stroke-dashoffset: 310.51519775390625;
-    stroke: rgb(234, 0, 255);
-    stroke-opacity: 1; 
-    stroke-linecap: round; 
-    fill: none;
-    stroke-width: 1; 
-    transform-origin: center;
-    transform: rotate(90deg);
+  transition: stroke-dashoffset 500ms;
+  /* stroke-dasharray and stroke-dashoffset numbers should match */
+  /* Use SVGPathElement's getTotalLength() method to get length. */
+  /* Reference: https://css-tricks.com/svg-line-animation-works/ */
+  /* stroke-dasharray: 310.51519775390625;
+    stroke-dashoffset: 310.51519775390625; */
+  stroke: rgb(234, 0, 255);
+  stroke-opacity: 1;
+  stroke-linecap: round;
+  fill: none;
+  stroke-width: 1;
+  transform-origin: center;
+  transform: rotate(90deg);
+}
+
+.progress-track {
+  stroke: rgb(255, 255, 255);
+  stroke-opacity: 1;
+  stroke-linecap: round;
+  fill: none;
+  stroke-width: 1;
 }
 
 .timeline {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    transform: scale(1.01);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transform: scale(1.01);
 }
 
 .dot {
-    width: 15px;
-    height: 15px;
-    position: absolute;
-    background: rgb(234, 0, 255);
-    background: rgb(157, 157, 157);
-    border-radius: 50%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  width: 15px;
+  height: 15px;
+  position: absolute;
+  background: rgb(234, 0, 255);
+  background: rgb(157, 157, 157);
+  border-radius: 50%;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
