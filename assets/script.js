@@ -14,48 +14,48 @@ const Program = {
         this.player = document.getElementById('player');
         this.menu();
 
-        this.annotations = [{
-            time: '00:03',
-            note: 'transition.',
-            link: 'http://www.google.com'
-        }, 
-        {
-            time: '00:05',
-            note: 'another transition.',
-            link: 'http://www.google.com'
-        },    
-        {
-            time: '00:07',
-            note: 'It speeds up here <a href="http://google.com">unexpectedly</a>.',
-            link: 'http://www.google.com'
-        },
-        {
-            time: '00:08',
-            note: 'It speeds up here too.',
-            link: 'http://www.google.com'
-        },
-        {
-            time: '00:09',
-            note: 'Listen for the change here. The strings fade out.',
-        },
-        {
-            time: '00:11',
-            note: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        },
-        {
-            time: '00:14',
-            note: 'Lorem ipsum  ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.',
-        },
-        {
-            time: '00:16',
-            note: 'Lorem ipsum Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
-        },
-        {
-            time: '00:19',
-            note: 'Lorem ipsum sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.',
-        },];
+        //this.tracks = 
+        this.loadTracks(this.tracksLoaded.bind(this));
+
         this.setCurrentAnnotationInterval();
         this.events();
+    },
+
+    tracksLoaded (tracks) {
+        console.log('Tracks from links', tracks)
+        this.tracks = tracks;
+        if (location.hash) {
+            this.setActiveTrack(location.hash.slice(1));
+        }
+        else {
+            this.activeTrack = tracks[0];
+        }
+        this.showLinks(tracks);
+    },
+
+    showLinks(tracks) {
+        const links = document.querySelector('.links');
+        tracks.forEach(track => {
+            const link = `<a class="link" href="${track.id}">${track.category}</a>`
+            links.innerHTML += link;
+        })
+        // ...
+    },
+
+    // Higher order function
+    loadTracks(tracksLoaded){
+        fetch('assets/tracks.json')
+            .then(response => response.json())
+            .then(tracksLoaded)
+            // .then(tracks => this.tracksLoaded(tracks))
+        // Callback hell
+        /*fetch('assets/tracks.json')
+            .then(response => {
+                response.json().then(tracks => {
+                    console.log({tracks})
+                })
+            })*/
+            
     },
 
     menu(){
@@ -70,14 +70,14 @@ const Program = {
         window.onload = () => {
             const onLoadedMetaData = (event) => {
                 const duration = this.mainTrack.duration;
-                console.log(duration);
+                // console.log(duration);
                 this.showDuration(this.getParsedDuration(duration));
                 this.renderAnnotations();
                 this.setProgressBarLength();
             };
     
             if (this.mainTrack.duration) {
-                console.log('Track already loaded!');
+                // console.log('Track already loaded!');
                 onLoadedMetaData();
             } else { 
                 this.mainTrack.onloadedmetadata = onLoadedMetaData
@@ -126,6 +126,27 @@ const Program = {
             const currentTime = this.mainTrack.currentTime;
             this.showTimeUpdate(this.getParsedDuration(currentTime));
         });
+
+        document.addEventListener('click', (event) => {
+            const { target } = event;
+            if (!target.classList.contains('link')) return;
+
+            event.preventDefault();
+
+            console.log(target.getAttribute('href'))
+            const id = target.getAttribute('href')
+            this.setActiveTrack(id);
+            console.log('active', this.activeTrack)
+            location.hash = id;
+            // TODO: improve this.
+            location.reload();
+        })
+    },
+    
+    setActiveTrack(id) {
+        this.activeTrack = this.tracks.find(track => {
+            return track.id === id;
+        })
     },
 
     setProgressBarLength() {
@@ -189,7 +210,7 @@ const Program = {
         const hours = this.getZeroNumber(Math.floor(time / 60 / 60));
         const minutes = this.getZeroNumber(Math.floor(time / 60) - (hours * 60));
         const seconds = this.getZeroNumber((time % 60).toFixed());
-        console.log(hours, minutes, seconds);
+        // console.log(hours, minutes, seconds);
         const hoursMinutesSeconds = [
             hours, 
             minutes, 
@@ -232,14 +253,14 @@ const Program = {
         this.timeStamps.innerHTML = '';
         document.querySelectorAll('.dot').forEach(dot => {
             this.player.removeChild(dot)
-        }) ;
+        });
     },
 
     renderAnnotations(){
         console.log(this); 
         const totalTime = this.getDuration();
         this.clearAnnotations();
-        this.annotations.forEach(({ time, note, link = '' }) => {
+        this.activeTrack.annotations.forEach(({ time, note, link = '' }) => {
             const secondsTime = this.getSeconds(time);
             const li = `
                 <li data-time="${secondsTime}">
@@ -270,8 +291,8 @@ const Program = {
         const angle = degrees / -180 * Math.PI
         const x = (radius * Math.cos(angle)).toFixed(2) // Math.PI * 1 if 180, Math.PI * 2 if 360
         const y = (radius * Math.sin(angle)).toFixed(2)
-        console.log(seconds, total);
-        console.log(radius, angle, x, y);
+        // console.log(seconds, total);
+        // console.log(radius, angle, x, y);
         dot.style.margin = `${x}px ${y}px`
         // dot.innerText = seconds
         dot.setAttribute('data-time', seconds);
@@ -280,7 +301,7 @@ const Program = {
 
     setCurrentAnnotation(){
         // loop over annotations and find the first where time < current time.
-        const annotations = [...this.annotations].reverse()
+        const annotations = [...this.activeTrack.annotations].reverse()
         const currentTime = this.mainTrack.currentTime;
         
         // Add active class
