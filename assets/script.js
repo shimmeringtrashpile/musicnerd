@@ -1,5 +1,8 @@
 const Program = {
     init(){
+        // Prevent any other binding
+        this.onLoadedSong = this.onLoadedSong.bind(this);
+
         this.mainTrack = document.getElementById('main-track');
         this.timeStamps = document.getElementById('time-stamps');
         this.play = document.querySelector('.play');
@@ -34,9 +37,9 @@ const Program = {
     },
 
     showLinks(tracks) {
-        const links = document.querySelector('.links');
+        const links = document.querySelector('.categories');
         tracks.forEach(track => {
-            const link = `<a class="link" href="${track.id}">${track.category}</a>`
+            const link = `<a class="category" href="${track.id}">${track.category}</a>`
             links.innerHTML += link;
         })
         // ...
@@ -65,22 +68,22 @@ const Program = {
     menuOpen(){
         document.querySelector('.menu-container').classList.add('active')
     },
+
+    onLoadedSong() {
+        const duration = this.mainTrack.duration;
+        // console.log(duration);
+        this.showDuration(this.getParsedDuration(duration));
+        this.renderAnnotations();
+        this.setProgressBarLength();
+    },
     
     events(){
         window.onload = () => {
-            const onLoadedMetaData = (event) => {
-                const duration = this.mainTrack.duration;
-                // console.log(duration);
-                this.showDuration(this.getParsedDuration(duration));
-                this.renderAnnotations();
-                this.setProgressBarLength();
-            };
-    
             if (this.mainTrack.duration) {
                 // console.log('Track already loaded!');
-                onLoadedMetaData();
+                this.onLoadedSong();
             } else { 
-                this.mainTrack.onloadedmetadata = onLoadedMetaData
+                this.mainTrack.onloadedmetadata = this.onLoadedSong
             }
         };
 
@@ -127,22 +130,63 @@ const Program = {
             this.showTimeUpdate(this.getParsedDuration(currentTime));
         });
 
-        document.addEventListener('click', (event) => {
-            const { target } = event;
-            if (!target.classList.contains('link')) return;
-
-            event.preventDefault();
-
-            console.log(target.getAttribute('href'))
-            const id = target.getAttribute('href')
-            this.setActiveTrack(id);
-            console.log('active', this.activeTrack)
-            location.hash = id;
-            // TODO: improve this.
-            location.reload();
-        })
+        // Category/genre click
+        document.addEventListener('click', this.changeCategory.bind(this))
+        document.addEventListener('click', this.trackClick.bind(this))
     },
     
+    changeCategory(event){
+        const { target } = event;
+        if (!target.classList.contains('category')) return;
+        event.preventDefault();
+        const selected = document.querySelector('.selected')
+        if (selected) { selected.classList.remove('selected') }
+        target.classList.add('selected');
+        const filteredTracks = this.tracks.filter(
+            track => track.category === target.innerText
+        );
+        console.log(filteredTracks);
+        
+        const trackListContainer = document.querySelector('.track-list')
+        
+        // Solution 1
+        /*filteredTracks.forEach(track => {
+            // append track to list
+            trackList.innerHTML += '...'
+        });*/
+        
+        // Solution 2
+        const trackList = filteredTracks.map(track => {
+            return `
+                <div class="track-element" id="${track.id}">
+                    <div class="track-author">${track.author}</div>
+                    <div class="track-song">${track.song}</div>
+                </div>
+            `;
+        }).join('');
+        trackListContainer.innerHTML = trackList;
+        console.log(trackList);
+        window.list = trackList;
+    },
+    
+    // Loads the track and start it
+    trackClick(event){
+        const target = event.target.parentNode;
+        console.log(target);
+        if (!target.classList.contains('track-element')) return;
+
+        console.log(target.getAttribute('id'))
+        const id = target.getAttribute('id')
+        this.setActiveTrack(id);
+        console.log('active', this.activeTrack)
+        this.renderTrack(id);
+    },
+    renderTrack(id){
+        location.hash = id;
+        this.onLoadedSong();
+    },
+
+
     setActiveTrack(id) {
         this.activeTrack = this.tracks.find(track => {
             return track.id === id;
@@ -259,7 +303,11 @@ const Program = {
     renderAnnotations(){
         console.log(this); 
         const totalTime = this.getDuration();
+        
+        // Clear previous annotations
         this.clearAnnotations();
+        
+        // Update with new annotations
         this.activeTrack.annotations.forEach(({ time, note, link = '' }) => {
             const secondsTime = this.getSeconds(time);
             const li = `

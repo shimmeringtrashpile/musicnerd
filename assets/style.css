@@ -192,3 +192,36 @@ body {
   left: 50%;
   transform: translate(-50%, -50%);
 }
+
+.category {
+  color: white;
+  margin-right: 10px;
+}
+
+.category.selected {
+  color: rgb(234, 0, 255);
+  text-decoration: none;
+}
+
+.track-list {
+  background: #363636;
+  margin-top: 30px;
+
+}
+
+.track-element {
+  display: grid;
+  grid-template-columns: 50% 50%;
+  padding: 10px;
+  cursor: pointer;
+  transition: .3s;
+}
+
+.track-element:hover {
+  background: #646464;
+}
+
+.track-element.selected {
+  background: #424242;
+  color: rgb(234, 0, 255);
+}
