@@ -3,24 +3,36 @@ const Program = {
         // Prevent any other binding
         this.onLoadedSong = this.onLoadedSong.bind(this);
 
+        /*this.html = {
+            track: document.getElementById('main-track'),
+            play: document.querySelector('.play')
+        }*/
+
         this.mainTrack = document.getElementById('main-track');
-        this.timeStamps = document.getElementById('time-stamps');
         this.play = document.querySelector('.play');
         this.pause = document.querySelector('.pause');
         this.trackDuration = document.querySelector('.duration');
         this.timeUpdate = document.querySelector('.time-update');
         this.volumeSlider = document.getElementById('volume-slider');
         // TODO: remove this duplicate
+        this.menuContainer = document.querySelector('.menu-container');
+        
+        // Circle...
         this.progressBar = document.querySelector('.progress-bar');
         this.path = document.querySelector('.progress-bar');
         this.timeLine = document.querySelector('.timeline');
+        this.cover = document.querySelector('.cover');
+        
+        // Track info
         this.player = document.getElementById('player');
-        this.menu();
+        this.timeStamps = document.getElementById('time-stamps');
+        this.description = document.querySelector('.description');
 
         //this.tracks = 
         this.loadTracks(this.tracksLoaded.bind(this));
 
         this.setCurrentAnnotationInterval();
+        this.menu();
         this.events();
     },
 
@@ -38,10 +50,26 @@ const Program = {
 
     showLinks(tracks) {
         const links = document.querySelector('.categories');
-        tracks.forEach(track => {
-            const link = `<a class="category" href="${track.id}">${track.category}</a>`
-            links.innerHTML += link;
-        })
+        tracks
+            .map(track => track.category) // ['rock', 'rock', 'jazz', '...']
+            .filter((category, index, arr) => {
+                const previousCategories = arr.slice(0, index);
+                return !previousCategories.includes(category);
+            })
+            /*.filter((category, index, arr) => {
+                let unique = true;
+                const previousCategories = arr.slice(0, index);
+                for (let prevCategory of previousCategories) {
+                    if (prevCategory === category) {
+                        unique = false;
+                    }
+                }
+                return unique;
+            })*/
+            .forEach(category => {
+                const link = `<a class="category" href="#">${category}</a>`
+                links.innerHTML += link;
+            })
         // ...
     },
 
@@ -58,14 +86,14 @@ const Program = {
                     console.log({tracks})
                 })
             })*/
-            
     },
 
     menu(){
         document.querySelector('.menu-button').addEventListener('click', this.menuOpen);
     },
 
-    menuOpen(){
+    menuOpen(event){
+        event.stopPropagation();
         document.querySelector('.menu-container').classList.add('active')
     },
 
@@ -74,42 +102,52 @@ const Program = {
         // console.log(duration);
         this.showDuration(this.getParsedDuration(duration));
         this.renderAnnotations();
+        this.showDescription();
+        this.showCover();
         this.setProgressBarLength();
+    },
+
+    // Loads first/default song
+    loadDefaultSong () {
+        const songLoaded = Boolean(this.mainTrack.duration);
+    
+        // If "maintrack" is already loaded, then call onLoadedSong
+        if (songLoaded) {
+            this.onLoadedSong();
+        }
+        // Otherwise, call onLoadedSong after metadata is loaded
+        else { 
+            this.mainTrack.onloadedmetadata = this.onLoadedSong
+        }
     },
     
     events(){
-        window.onload = () => {
-            if (this.mainTrack.duration) {
-                // console.log('Track already loaded!');
-                this.onLoadedSong();
-            } else { 
-                this.mainTrack.onloadedmetadata = this.onLoadedSong
-            }
-        };
+        window.onload = () => this.loadDefaultSong()
+        window.addEventListener(
+            "resize",
+            debounce(this.renderAnnotations, 50).bind(this)
+        );
 
-        window.addEventListener("resize", debounce(this.renderAnnotations, 50).bind(this));
-
-        const click = 'click'
-        this.play.addEventListener(click, (event) => {
+        this.play.addEventListener('click', (event) => {
             // press play and hide play and show pause
             this.playTrack();
         })
         
-        this.pause.addEventListener(click, (event) => {
+        this.pause.addEventListener('click', (event) => {
             // press play and hide play and show pause
             this.pauseTrack();
         })
 
-        this.volumeSlider.addEventListener(click, (event) => {
+        this.volumeSlider.addEventListener('click', (event) => {
             // adjust slider range to change volume
             this.changeVolume();
         })
 
-        this.timeStamps.addEventListener(click, (event) => {
+        this.timeStamps.addEventListener('click', (event) => {
             this.annotationClick(event);
         })
 
-        this.player.addEventListener(click, (event) => {
+        this.player.addEventListener('click', (event) => {
             // Check if the element is a dot
             if (event.target.classList.contains("dot")){
             this.annotationClick(event);
@@ -132,12 +170,28 @@ const Program = {
 
         // Category/genre click
         document.addEventListener('click', this.changeCategory.bind(this))
-        document.addEventListener('click', this.trackClick.bind(this))
+
+        // When track element from track list is clicked -> select that track
+        document.addEventListener('click', this.selectTrack.bind(this))
+        
+        // Stop the click propagation of the .menu-container
+        // (so we don't close the menu when we are clicking on it)
+        document.querySelector('.menu-container')
+            .addEventListener('click', event => event.stopPropagation())
+        
+        // 
+        document.addEventListener('click', this.closeMenu.bind(this))
+    },
+    
+    closeMenu() {
+        this.menuContainer.classList.remove('active');
     },
     
     changeCategory(event){
+        // Category clicked?
         const { target } = event;
         if (!target.classList.contains('category')) return;
+
         event.preventDefault();
         const selected = document.querySelector('.selected')
         if (selected) { selected.classList.remove('selected') }
@@ -170,22 +224,26 @@ const Program = {
     },
     
     // Loads the track and start it
-    trackClick(event){
+    selectTrack(event){
+        // Checks if its a track element first
         const target = event.target.parentNode;
-        console.log(target);
         if (!target.classList.contains('track-element')) return;
 
-        console.log(target.getAttribute('id'))
+        // Gets track ID and loads it
         const id = target.getAttribute('id')
         this.setActiveTrack(id);
-        console.log('active', this.activeTrack)
         this.renderTrack(id);
+
+        // Changes active class
+        const selected = document.querySelector('.track-element.selected')
+        selected && selected.classList.remove('selected');
+        target.classList.add('selected');
     },
+
     renderTrack(id){
         location.hash = id;
         this.onLoadedSong();
     },
-
 
     setActiveTrack(id) {
         this.activeTrack = this.tracks.find(track => {
@@ -214,11 +272,11 @@ const Program = {
     },
 
     scrollToAnnotation(dataTime) {
-    const timeStamps = document.querySelector('#time-stamps');
-    const dataTimeOffset = document.querySelector(`li[data-time="${dataTime}"]`).offsetTop 
-    const scrollPosition = dataTimeOffset - timeStamps.offsetTop - 10
-    console.log(scrollPosition);
-    timeStamps.scrollTo(0, scrollPosition);
+        const timeStamps = document.querySelector('#time-stamps');
+        const dataTimeOffset = document.querySelector(`li[data-time="${dataTime}"]`).offsetTop 
+        const scrollPosition = dataTimeOffset - timeStamps.offsetTop - 10
+        // console.log(scrollPosition);
+        timeStamps.scrollTo(0, scrollPosition);
     },
 
     getDuration(){
@@ -279,6 +337,12 @@ const Program = {
         this.trackDuration.innerHTML = `${time}`;
     },
 
+    showCover() {
+        const cover = this.activeTrack.cover;
+        console.log(cover);
+        this.cover.setAttribute('src', cover);
+    },
+
     showTimeUpdate(time) {
         this.timeUpdate.innerHTML = `${time}`;
         // Get length of circle and use to calculate the 'unit interval' of remaining time.
@@ -288,7 +352,7 @@ const Program = {
         // Use SVGPathElement's getTotalLength() method to get circle length.
         this.length = this.path.getTotalLength();
         const strokeDashOffset = this.length * remainingTimeUnitInterval;
-        console.log('strokeDashoffset: ' + strokeDashOffset);
+        // console.log('strokeDashoffset: ' + strokeDashOffset);
         this.progressBar.style.strokeDashoffset = strokeDashOffset;
 
     },
@@ -301,26 +365,36 @@ const Program = {
     },
 
     renderAnnotations(){
-        console.log(this); 
+        // console.log(this); 
         const totalTime = this.getDuration();
         
         // Clear previous annotations
         this.clearAnnotations();
         
         // Update with new annotations
-        this.activeTrack.annotations.forEach(({ time, note, link = '' }) => {
+        this.activeTrack.annotations.forEach(annotation => {
+            const { time } = annotation;
+
             const secondsTime = this.getSeconds(time);
-            const li = `
-                <li data-time="${secondsTime}">
-                    ${time} <br> ${note}
-                    ${link && `<a href="${link}" target="_blank">link</a>`}
-                </li>`;
-            // let li = document.createElement('li')
-            this.timeStamps.innerHTML += li;
+            this.showAnnotation(secondsTime, annotation);
             this.showAnnotationDot(secondsTime, totalTime);
         });
     },
 
+    showDescription(){
+        const { description } = this.activeTrack;
+        this.description.innerHTML = description;
+    },
+    
+    showAnnotation(secondsTime, {time, note, link = ''}){
+        const li = `
+            <li data-time="${secondsTime}">
+                ${time} <br> ${note}
+                ${link && `<a href="${link}" target="_blank">link</a>`}
+            </li>`;
+        this.timeStamps.innerHTML += li;
+    },
+    
     showAnnotationDot(seconds, total){
         const degrees = (seconds / total) * 360
         // Use sine (vertical) and cosine (horizontal) to get dot angle.
@@ -333,8 +407,8 @@ const Program = {
         const halfDotWidth = dot.clientWidth / 2;
         //const radius = (this.timeLine.getBoundingClientRect().width / 2) - halfDotWidth;
         const radius = (this.player.clientWidth / 2);
-        console.log('timeLine: ' + this.player.clientWidth);
-        console.log('radius: ' + radius);
+        // console.log('timeLine: ' + this.player.clientWidth);
+        // console.log('radius: ' + radius);
         // 360 = 2, 180 = 1
         const angle = degrees / -180 * Math.PI
         const x = (radius * Math.cos(angle)).toFixed(2) // Math.PI * 1 if 180, Math.PI * 2 if 360

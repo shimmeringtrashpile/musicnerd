@@ -13,11 +13,13 @@
     <link rel="stylesheet" href="assets/range.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet"></head>
 <body>
+    <header>
     <div class="menu-button">
         <div class="line"></div>
         <div class="line"></div>
         <div class="line"></div>
     </div>
+   </header>
     <ul class="menu-container">
         <li class="link"><a href="#">Example Link</a></li>
         <li class="link"><a href="#">Example Link</a></li>
@@ -31,7 +33,7 @@
         <div id="player">
             <img src="assets/pause.svg" alt="" class="pause">
             <img src="assets/play.svg" alt="" class="play">
-            <img src="mp3/Reich_Music-for-18-Musicians-cover.jpg" alt="" class="cover">
+            <img class="cover">
             <svg viewBox="0 0 100 100" class="timeline" version="1.1" xmlns="http://www.w3.org/2000/svg"> 
                 <g class="shape"> 
                     <!-- <circle class="progress-track" cx="50" cy="50" r="47.45" stroke="#becce1" stroke-opacity="0.25" stroke-linecap="round" fill="none" stroke-width="5"></circle>  -->
@@ -46,6 +48,7 @@
         <div class="duration"></div>
         <div class="time-update"></div>
         <ul id="time-stamps"></ul>
+        <div class="description"></div>
         <div class="categories"></div>
         <div class="track-list"></div>
     </main>

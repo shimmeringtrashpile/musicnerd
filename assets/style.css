@@ -1,15 +1,33 @@
+body {
+  background: #2c2b2b;
+  color: #fff;
+  font-family: "Roboto", sans-serif;
+  overflow-x: hidden;
+  padding-top: 50px;
+}
+
 main {
   width: 80%;
   max-width: 480px;
   margin: auto;
 }
 
+header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  display: flex;
+  justify-content: flex-end;
+  background: black;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
 .menu-button {
     width: 30px;
     height: 30px;
-    position: absolute;
-    top: 15px;
-    right: 15px;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -18,7 +36,7 @@ main {
 }
 
 .menu-button:hover {
-    height: 27px;
+    /*height: 27px;*/
 }
 
 .menu-container {
@@ -62,13 +80,6 @@ li::marker{
   /* border: 2px solid #fff; */
   width: 100%;
   display: block;
-}
-
-body {
-  background: #2c2b2b;
-  color: #fff;
-  font-family: "Roboto", sans-serif;
-  overflow-x: hidden;
 }
 
 .play,
@@ -193,6 +204,10 @@ body {
   transform: translate(-50%, -50%);
 }
 
+.description {
+  margin: 30px 0;
+}
+
 .category {
   color: white;
   margin-right: 10px;
@@ -206,7 +221,8 @@ body {
 .track-list {
   background: #363636;
   margin-top: 30px;
-
+  max-height: 117px;
+  /* max-height: calc(39px * 3); SCSS Sass */
 }
 
 .track-element {
